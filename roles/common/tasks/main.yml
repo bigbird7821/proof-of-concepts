@@ -1,0 +1,34 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+- name: Install common utility packages like vim
+  yum: name={{ item }} state=installed
+  with_items:
+   - vim-enhanced
+   - nc
+   #- multitail
+
+- name: Install ntp
+  yum: name=ntp state=present
+  #become: true
+  tags: ntp
+
+- name: Install selinux dependencies
+  yum: name={{ item }} state=installed
+  with_items:
+    - libselinux-python
+
+- name: Configure ntp file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  #become: true
+  tags: ntp
+  notify: restart ntp
+
+- name: Start the ntp service
+  service: name=ntpd state=started enabled=yes
+  #become: true
+  tags: ntp
+
+- name: test to see if selinux is running
+  command: getenforce
+  register: sestatus
+  changed_when: false
