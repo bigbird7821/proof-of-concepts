@@ -1,0 +1,7 @@
+---
+# nonsensitive data
+mysqlservice: mysqld
+mysql_port: 3306
+mysql_user: mysql
+dbuser: foouser
+dbname: foodb

@@ -1,0 +1,4 @@
+.vpass
+*.sw*
+.vagrant
+*.retry
