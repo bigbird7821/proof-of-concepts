@@ -1,8 +1,0 @@
----
-# common.yml: deploy common utilities shared by all environments
-- name: apply common configuration to all nodes
-  hosts: all
-  become: true
-  remote_user: root
-  roles:
-    - { role: common,                   tags: ["common"] }

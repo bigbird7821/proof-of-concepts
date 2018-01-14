@@ -1,0 +1,4 @@
+.vagrant
+cache
+plays/cache
+environments/dev/hosts.ini.example

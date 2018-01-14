@@ -1,3 +1,0 @@
----
-# This playbook deploys the whole application stack in this site.
-- include: plays/common.yml

@@ -6,126 +6,90 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
+	config.vm.box = "insight/elk"
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "bento/centos-6.8"
+    # Stop the evil VirtualBox Guest Addition auto update
+    config.vbguest.auto_update = false
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  config.vm.box_check_update = false
+    # Define the number of servers
+    N = 3
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+    # Create the current list of host definitions
+    code = []
+    ansible_inventory_dir = "environments/dev"
+    (1..N).each do |machine_id|
+        config.vm.define "machine#{machine_id}" do |machine|
+            # create the inventory file
+            if machine_id == 1
+                code = ["###VAGRANT-MANAGED-BLOCK###"]
+            end
+            if machine_id == N
+                code << "192.168.77.#{20+machine_id} ansible_connection=local"
+                code << ""
+                code << "[all:vars]"
+                code << "ansible_connection=ssh"
+                code << "ansible_ssh_user=vagrant"
+                code << "ansible_ssh_pass=vagrant"
+                code << "###VAGRANT-MANAGED-BLOCK###"
+            else
+                code << "192.168.77.#{20+machine_id} ansible_ssh_host=192.168.77.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
+            end
+            code.join("\n")
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
-
-
-
-  # Copy files from my host (Windows) to the guest (vagrant)
-  #config.vm.provision "file", source: "~/.vimrc", destination: ".vimrc"
-  #config.vm.provision "shell", inline: "mkdir -p ~/.vim/bundle"
-  #config.vm.provision "file", source: "~/.vim", destination: ".vim"
-  #config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"
-
-  # Do stuff with an inline bash script
-  $script = <<-EOF
-    # comment the following if you want to run bash commands first
-    #/bin/bash /vagrant/provision/bootstrap.sh
-    #sudo yum install -y vim
-    mkdir -p ~/.vim/bundle
-    echo "This is an inline ansible bash script"
-    EOF
-  #config.vm.provision "shell", inline: $script
-
-  # set (OR unset) the vagrant proxy depending on current environment variable settings
-  config.proxy.http = ENV['http_proxy'] || ''
-  config.proxy.https = ENV['http_proxy'] || ''
-  config.proxy.no_proxy = ENV['no_proxy'] || ''
-
-  N = 5
-  (1..N).each do |machine_id|
-	config.vm.define "node#{machine_id}" do |machine|
-	  machine.vm.hostname = "node#{machine_id}"
-	  machine.vm.network "private_network", ip: "172.17.177.#{20+machine_id}"
-      machine.vbguest.auto_update = true
-	  machine.vm.provision "shell", inline: $script
-	end
-  end
-
-  # setup a port forward to the web node
-  #config.vm.define 'node1' do |machine|
-  #  machine.vm.network "forwarded_port", guest: 80, host: 8080
-  #end
-
-  config.vm.define 'controller' do |machine|
-    machine.vm.network "private_network", ip: "172.17.177.11"
-    machine.vbguest.auto_update = true
-
-    # get the password file to decrypt ansible-vault sensitive data
-    machine.vm.provision "file", source: "~/dotfiles/.vault/lamp_simple.password", destination: "/home/vagrant/vpass"
-    machine.vm.provision "shell", inline: "chmod 0640 /home/vagrant/vpass"
-
-    machine.vm.provision :ansible_local do |ansible|
-      ansible.config_file    = "plays/ansible.cfg"
-      ansible.playbook       = "site.yml"
-      ansible.verbose        = "vv"
-      ansible.install        = true
-      ansible.limit          = "all" # or only "nodes" group, etc.
-      ansible.inventory_path = "development.ini"
-      #ansible.raw_arguments  = "--ask-vault-pass"
-      ansible.vault_password_file = "/home/vagrant/vpass"
+            # setup the ansible inventory file
+            Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
+            File.open("#{ansible_inventory_dir}/hosts.ini.example" ,'w') do |f|
+                f.write "#{code.join("\n")}\n"
+            end
+        end
     end
 
-  end
-  
+    ## Add the latest host definitions to the hosts.ini
+    $script = <<-SCRIPT
+        cd /vagrant/environments/dev
+        sed -i "/###VAGRANT-MANAGED-BLOCK###/,/###VAGRANT-MANAGED-BLOCK###/ d" hosts.ini
+        cat hosts.ini.example | cat - hosts.ini > hosts.ini.tmp
+        mv hosts.ini.tmp hosts.ini
+    SCRIPT
+    config.vm.provision "shell", inline: $script
+
+    # Provision the machines
+    (1..N).each do |machine_id|
+        config.vm.define "machine#{machine_id}" do |machine|
+            $ipAddress = "192.168.77.#{20+machine_id}"
+            $hostName = "machine#{machine_id}"
+
+            machine.vm.hostname = "machine#{machine_id}"
+            machine.vm.network "private_network", ip: "192.168.77.#{20+machine_id}"
+
+            # Only execute once the Ansible provisioner,
+            # when all the machines are up and ready.
+            if machine_id == N
+                # rename this host to be the ansible controller
+                machine.vm.hostname = "controller"
+
+                # ensure that all private keys are stored locally on each VM
+                machine.vm.provision "shell", path: "scripts/doCopyOfSshKeys.sh"
+
+                # ensure the ANSIBLE_CONFIG is set so that ansible-playbook can be easily run from within the controller
+                machine.vm.provision "shell",
+                    inline: "cd /etc/profile.d && echo \"export ANSIBLE_CONFIG=/vagrant/environments/dev\" > ansible.sh && chmod 775 ansible.sh",
+                    run: "always"
+
+                # begin the ansible provisioning...
+                machine.vm.provision :ansible_local do |ansible|
+                    ansible.config_file    = "environments/dev/ansible.cfg"
+                    ansible.playbook       = "plays/ping.yml"
+                    ansible.verbose        = "vv"
+                    ansible.install        = true
+                    ansible.limit          = "all" # or only "nodes" group, etc.
+                    ansible.compatibility_mode	= "2.0"
+                    ansible.inventory_path = "environments/dev/hosts.ini"
+                    ansible.raw_arguments  = "--diff"
+                end
+
+            end
+        end
+    end
+
 end
