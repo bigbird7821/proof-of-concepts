@@ -1,0 +1,7 @@
+---
+- name: " "
+  debug:
+    msg: "{{result}}"
+  when: ((result.rc | default(0)) != 0) or ( _should_debug_test | default(false) )
+  failed_when: ((result.rc | default(0)) != 0)
+  ignore_errors: true
