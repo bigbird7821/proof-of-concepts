@@ -11,6 +11,9 @@ Vagrant.configure("2") do |config|
     # Stop the evil VirtualBox Guest Addition auto update
     config.vbguest.auto_update = false
 
+    # Add shared roles
+    config.vm.synced_folder "../../orchestration/roles", "/ansible/roles"
+
     # Define the number of servers
     N = 3
 
