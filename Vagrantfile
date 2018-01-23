@@ -1,25 +1,18 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-def setupAnsibleInventoryFor(thisNumberOfVms = 3, thisSubnetBase = "192.168.77")
-   puts "The programming language is #{a1}"
-   puts "The programming language is #{a2}"
-end
-
-   # Define the number of servers
-    N = 3
-
+def writeAnsibleInventoryFor(thisNumberOfVms = 3, thisSubnetBase = "192.168.77")
     # Create the current list of host definitions
     code = []
     ansible_inventory_dir = "environments/dev/inventory"
     code = ["###VAGRANT-MANAGED-BLOCK###"]
-    1.upto(N) do |machine_id|
+    1.upto(thisNumberOfVms) do |machine_id|
         # create the inventory file
-        if machine_id != N
-            code << "192.168.77.#{20+machine_id} ansible_ssh_host=192.168.77.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
+        if machine_id != thisNumberOfVms
+            code << "#{thisSubnetBase}.#{20+machine_id} ansible_ssh_host=#{thisSubnetBase}.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
         else
         puts "###### #{machine_id} #######################################"
-            code << "192.168.77.#{20+machine_id} ansible_connection=local"
+            code << "#{thisSubnetBase}.#{20+machine_id} ansible_connection=local"
             code << ""
             code << "[all:vars]"
             code << "ansible_connection=ssh"
@@ -35,7 +28,7 @@ end
     File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
         f.write "#{code.join("\n")}\n"
     end
-
+end
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -51,7 +44,10 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "../../orchestration/roles", "/ansible/roles"
 
     # Define the number of servers
-    #N = 3
+    N = 3
+
+    # Create the initial ansible inventory of VMs
+    writeAnsibleInventoryFor(3, "192.168.77")
 
     # Provision the machines
     (1..N).each do |machine_id|
