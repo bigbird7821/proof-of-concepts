@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
     # Add shared roles
     config.vm.synced_folder "../../orchestration/roles", "/ansible/roles"
 
-    # Define the number of servers
+    # Define the number of servers and the subnet to use
     thisNumberOfVms = 3
     thisSubnet = "192.168.77"
 
@@ -61,7 +61,6 @@ Vagrant.configure("2") do |config|
     end
 
 end
-
 
 def writeAnsibleInventoryFor(_thisNumberOfVms = 3, comment = "", _thisSubnetBase = "192.168.77")
     # Create the current list of host definitions
