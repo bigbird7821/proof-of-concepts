@@ -1,6 +1,42 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+def setupAnsibleInventoryFor(thisNumberOfVms = 3, thisSubnetBase = "192.168.77")
+   puts "The programming language is #{a1}"
+   puts "The programming language is #{a2}"
+end
+
+   # Define the number of servers
+    N = 3
+
+    # Create the current list of host definitions
+    code = []
+    ansible_inventory_dir = "environments/dev/inventory"
+    code = ["###VAGRANT-MANAGED-BLOCK###"]
+    1.upto(N) do |machine_id|
+        # create the inventory file
+        if machine_id != N
+            code << "192.168.77.#{20+machine_id} ansible_ssh_host=192.168.77.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
+        else
+        puts "###### #{machine_id} #######################################"
+            code << "192.168.77.#{20+machine_id} ansible_connection=local"
+            code << ""
+            code << "[all:vars]"
+            code << "ansible_connection=ssh"
+            code << "ansible_ssh_user=vagrant"
+            code << "ansible_ssh_pass=vagrant"
+        end
+    end
+    code << "###VAGRANT-MANAGED-BLOCK###"
+    puts "#{code.join("\n")}"
+
+    # setup the ansible inventory file
+    Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
+    File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
+        f.write "#{code.join("\n")}\n"
+    end
+
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -15,35 +51,7 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "../../orchestration/roles", "/ansible/roles"
 
     # Define the number of servers
-    N = 3
-
-    # Create the current list of host definitions
-    code = []
-    ansible_inventory_dir = "environments/dev/inventory"
-    (1..N).each do |machine_id|
-        config.vm.define "machine#{machine_id}" do |machine|
-            # create the inventory file
-            code = ["###VAGRANT-MANAGED-BLOCK###"]
-            if machine_id == N
-                code << "192.168.77.#{20+machine_id} ansible_connection=local"
-                code << ""
-                code << "[all:vars]"
-                code << "ansible_connection=ssh"
-                code << "ansible_ssh_user=vagrant"
-                code << "ansible_ssh_pass=vagrant"
-                code << "###VAGRANT-MANAGED-BLOCK###"
-            else
-                code << "192.168.77.#{20+machine_id} ansible_ssh_host=192.168.77.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
-            end
-            code.join("\n")
-
-            # setup the ansible inventory file
-            Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
-            File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
-                f.write "#{code.join("\n")}\n"
-            end
-        end
-    end
+    #N = 3
 
     # Provision the machines
     (1..N).each do |machine_id|
