@@ -1,35 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-def writeAnsibleInventoryFor(thisNumberOfVms = 3, thisSubnetBase = "192.168.77")
-    # Create the current list of host definitions
-    code = []
-    ansible_inventory_dir = "environments/dev/inventory"
-    code = ["###VAGRANT-MANAGED-BLOCK###"]
-    1.upto(thisNumberOfVms) do |machine_id|
-        # create the inventory file
-        if machine_id != thisNumberOfVms
-            code << "#{thisSubnetBase}.#{20+machine_id} ansible_ssh_host=#{thisSubnetBase}.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
-        else
-        puts "###### #{machine_id} #######################################"
-            code << "#{thisSubnetBase}.#{20+machine_id} ansible_connection=local"
-            code << ""
-            code << "[all:vars]"
-            code << "ansible_connection=ssh"
-            code << "ansible_ssh_user=vagrant"
-            code << "ansible_ssh_pass=vagrant"
-        end
-    end
-    code << "###VAGRANT-MANAGED-BLOCK###"
-    puts "#{code.join("\n")}"
-
-    # setup the ansible inventory file
-    Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
-    File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
-        f.write "#{code.join("\n")}\n"
-    end
-end
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -44,23 +15,24 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "../../orchestration/roles", "/ansible/roles"
 
     # Define the number of servers
-    N = 3
+    thisNumberOfVms = 3
+    thisSubnet = "192.168.77"
 
     # Create the initial ansible inventory of VMs
-    writeAnsibleInventoryFor(3, "192.168.77")
+    writeAnsibleInventoryFor(thisNumberOfVms, "and for", thisSubnet)
 
     # Provision the machines
-    (1..N).each do |machine_id|
+    1.upto(thisNumberOfVms) do |machine_id|
         config.vm.define "machine#{machine_id}" do |machine|
-            $ipAddress = "192.168.77.#{20+machine_id}"
+            $ipAddress = "#{thisSubnet}.#{20+machine_id}"
             $hostName = "machine#{machine_id}"
 
             machine.vm.hostname = "machine#{machine_id}"
-            machine.vm.network "private_network", ip: "192.168.77.#{20+machine_id}"
+            machine.vm.network "private_network", ip: "#{thisSubnet}.#{20+machine_id}"
 
             # Only execute once the Ansible provisioner,
             # when all the machines are up and ready.
-            if machine_id == N
+            if machine_id == thisNumberOfVms
                 # rename this host to be the ansible controller
                 machine.vm.hostname = "controller"
 
@@ -88,4 +60,33 @@ Vagrant.configure("2") do |config|
         end
     end
 
+end
+
+
+def writeAnsibleInventoryFor(_thisNumberOfVms = 3, comment = "", _thisSubnetBase = "192.168.77")
+    # Create the current list of host definitions
+    code = []
+    ansible_inventory_dir = "environments/dev/inventory"
+    code = ["###VAGRANT-MANAGED-BLOCK###"]
+    1.upto(_thisNumberOfVms) do |machine_id|
+        # create the inventory file
+        if machine_id != _thisNumberOfVms
+            code << "#{_thisSubnetBase}.#{20+machine_id} ansible_ssh_host=#{_thisSubnetBase}.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine#{machine_id}/virtualbox/private_key"
+        else
+            code << "#{_thisSubnetBase}.#{20+machine_id} ansible_connection=local"
+            code << ""
+            code << "[all:vars]"
+            code << "ansible_connection=ssh"
+            code << "ansible_ssh_user=vagrant"
+            code << "ansible_ssh_pass=vagrant"
+        end
+    end
+    code << "###VAGRANT-MANAGED-BLOCK###"
+    #puts "#{code.join("\n")}"
+
+    # setup the ansible inventory file
+    Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
+    File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
+        f.write "#{code.join("\n")}\n"
+    end
 end
