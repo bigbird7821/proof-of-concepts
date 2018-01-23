@@ -19,13 +19,11 @@ Vagrant.configure("2") do |config|
 
     # Create the current list of host definitions
     code = []
-    ansible_inventory_dir = "environments/dev"
+    ansible_inventory_dir = "environments/dev/inventory"
     (1..N).each do |machine_id|
         config.vm.define "machine#{machine_id}" do |machine|
             # create the inventory file
-            if machine_id == 1
-                code = ["###VAGRANT-MANAGED-BLOCK###"]
-            end
+            code = ["###VAGRANT-MANAGED-BLOCK###"]
             if machine_id == N
                 code << "192.168.77.#{20+machine_id} ansible_connection=local"
                 code << ""
@@ -41,20 +39,11 @@ Vagrant.configure("2") do |config|
 
             # setup the ansible inventory file
             Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
-            File.open("#{ansible_inventory_dir}/hosts.ini.example" ,'w') do |f|
+            File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
                 f.write "#{code.join("\n")}\n"
             end
         end
     end
-
-    ## Add the latest host definitions to the hosts.ini
-    $script = <<-SCRIPT
-        cd /vagrant/environments/dev
-        sed -i "/###VAGRANT-MANAGED-BLOCK###/,/###VAGRANT-MANAGED-BLOCK###/ d" hosts.ini
-        cat hosts.ini.example | cat - hosts.ini > hosts.ini.tmp
-        mv hosts.ini.tmp hosts.ini
-    SCRIPT
-    config.vm.provision "shell", inline: $script
 
     # Provision the machines
     (1..N).each do |machine_id|
@@ -87,7 +76,7 @@ Vagrant.configure("2") do |config|
                     ansible.install        = true
                     ansible.limit          = "all" # or only "nodes" group, etc.
                     ansible.compatibility_mode	= "2.0"
-                    ansible.inventory_path = "environments/dev/hosts.ini"
+                    ansible.inventory_path = "environments/dev/inventory"
                     ansible.raw_arguments  = "--diff"
                 end
 
