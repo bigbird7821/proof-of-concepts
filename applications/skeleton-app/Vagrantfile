@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "../../common/plays", "/opt/ansible-skeleton/common/plays"
 
     # Define the number of servers and the subnet to use
-    thisNumberOfVms = 3
+    thisNumberOfVms = 2
     thisSubnet = "192.168.77"
 
     # Create the initial ansible inventory of VMs
@@ -86,7 +86,7 @@ def writeAnsibleInventoryFor(_thisNumberOfVms = 3, comment = "", _thisSubnetBase
 
     # setup the ansible inventory file
     Dir.mkdir(ansible_inventory_dir) unless Dir.exist?(ansible_inventory_dir)
-    File.open("#{ansible_inventory_dir}/fulllist" ,'w') do |f|
+    File.open("#{ansible_inventory_dir}/aaa-machine-definitions" ,'w') do |f|
         f.write "#{code.join("\n")}\n"
     end
 end

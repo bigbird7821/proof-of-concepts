@@ -1,0 +1,8 @@
+---
+- name: Upgrading all yum packages
+  listen: "upgrade all yum packages"
+  become_user: root
+  become: true
+  yum:
+    name: "*"
+    state: latest

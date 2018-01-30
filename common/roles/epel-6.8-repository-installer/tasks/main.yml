@@ -1,0 +1,18 @@
+---
+- name: Install python-devel package, which is required for verifying the EPEL repo
+  become: true
+  yum: name={{ item }} state=installed
+  with_items:
+   - python-devel
+
+- name: Install the EPEL Repo
+  become: true
+  become_user: root
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    baseurl: https://download.fedoraproject.org/pub/epel/6/$basearch/
+    gpgkey: http://download.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-6
+    gpgcheck: yes
+    enabled: yes
+  notify: "upgrade all yum packages"

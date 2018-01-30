@@ -1,6 +1,9 @@
 ---
 - name: Test
   hosts: all
+  roles:
+    - proxy-configurator
+    - epel-6.8-repository-installer
   tasks:
     - name: Ping
       ping:
