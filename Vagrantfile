@@ -12,7 +12,8 @@ Vagrant.configure("2") do |config|
     config.vbguest.auto_update = false
 
     # Add shared roles
-    config.vm.synced_folder "../../orchestration/roles", "/ansible/roles"
+    config.vm.synced_folder "../../common/roles", "/opt/ansible-skeleton/common/roles"
+    config.vm.synced_folder "../../common/plays", "/opt/ansible-skeleton/common/plays"
 
     # Define the number of servers and the subnet to use
     thisNumberOfVms = 3
