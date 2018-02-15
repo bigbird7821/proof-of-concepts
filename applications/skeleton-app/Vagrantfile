@@ -2,15 +2,16 @@
 # vi: set ft=ruby :
 
 # Define the number of servers and the subnet to use
-thisNumberOfVms = 2
-thisSubSubnet = 87
-thisMachineNameBase = "machine#{thisSubSubnet}"
-thisSubnet = "192.168.#{thisSubSubnet}"
+$thisNumberOfVms = 2
+$thisSubSubnet = 77
+$thisMachineNameBase = "machine#{$thisSubSubnet}"
+$thisSubnet = "192.168.#{$thisSubSubnet}"
 
 Vagrant.configure("2") do |config|
-    #config.vm.box = "insight/elk"
-    config.vm.box = "oracle/oel-6.9"
-    config.vm.box_url = "http://yum.oracle.com/boxes/oraclelinux/ol69/ol69.box"
+	 # TODO: Setup an OEL 6 base box
+    config.vm.box = "insight/elk"
+    #config.vm.box = "oracle/oel-6.9"
+    #config.vm.box_url = "http://yum.oracle.com/boxes/oraclelinux/ol69/ol69.box"
 
     # Stop the evil VirtualBox Guest Addition auto update
     config.vbguest.auto_update = false
@@ -20,20 +21,20 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder "../../common/plays", "/opt/ansible-skeleton/common/plays"
 
     # Create the initial ansible inventory of VMs
-    writeAnsibleInventoryFor(thisNumberOfVms, "and for", thisSubnet)
+    writeAnsibleInventoryFor($thisNumberOfVms, "and for", $thisSubnet)
 
     # Provision the machines
-    1.upto(thisNumberOfVms) do |machine_id|
-        config.vm.define "#{thisMachineNameBase}#{machine_id}" do |machine|
-            $ipAddress = "#{thisSubnet}.#{20+machine_id}"
-            $hostName = "#{thisMachineNameBase}#{machine_id}"
+    1.upto($thisNumberOfVms) do |machine_id|
+        config.vm.define "#{$thisMachineNameBase}#{machine_id}" do |machine|
+            $ipAddress = "#{$thisSubnet}.#{20+machine_id}"
+            $hostName = "#{$thisMachineNameBase}#{machine_id}"
 
-            machine.vm.hostname = "#{thisMachineNameBase}#{machine_id}"
-            machine.vm.network "private_network", ip: "#{thisSubnet}.#{20+machine_id}"
+            machine.vm.hostname = "#{$thisMachineNameBase}#{machine_id}"
+            machine.vm.network "private_network", ip: "#{$thisSubnet}.#{20+machine_id}"
 
             # Only execute once the Ansible provisioner,
             # when all the machines are up and ready.
-            if machine_id == thisNumberOfVms
+            if machine_id == $thisNumberOfVms
 
                 # ensure that all private keys are stored locally on each VM
                 machine.vm.provision "shell", path: "scripts/doCopyOfSshKeys.sh"
@@ -69,7 +70,7 @@ def writeAnsibleInventoryFor(_thisNumberOfVms = 3, comment = "", _thisSubnetBase
     1.upto(_thisNumberOfVms) do |machine_id|
         # create the inventory file
         if machine_id != _thisNumberOfVms
-            code << "#{_thisSubnetBase}.#{20+machine_id} ansible_ssh_host=#{_thisSubnetBase}.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/#{thisMachineNameBase}#{machine_id}/virtualbox/private_key"
+            code << "#{_thisSubnetBase}.#{20+machine_id} ansible_ssh_host=#{_thisSubnetBase}.#{20+machine_id} ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/#{$thisMachineNameBase}#{machine_id}/virtualbox/private_key"
         else
             code << "#{_thisSubnetBase}.#{20+machine_id} ansible_connection=local"
             code << ""
