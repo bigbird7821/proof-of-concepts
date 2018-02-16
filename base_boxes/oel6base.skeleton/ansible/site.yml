@@ -6,7 +6,7 @@
   become: true
   become_user: root
   roles:
-    - { role: common-utility-installer }
-    - { role: vagrant-base-cleaner }
+    - common-utility-installer
+    - vagrant-base-cleaner
 
 
