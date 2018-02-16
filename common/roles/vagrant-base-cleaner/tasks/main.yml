@@ -1,0 +1,14 @@
+---
+- name: Transfer the VM cleanup script
+  become: true
+  become_user: root
+  copy:
+    src: doCleanupOfVm.sh
+    dest: /tmp
+    mode: 0777
+
+- name: Execute the VM cleanup script
+  become: true
+  become_user: root
+  command: sh /tmp/doCleanupOfVm.sh
+

@@ -1,0 +1,85 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+	config.vm.box = "oracle/oel-6.9"
+	config.vm.box_url = "http://yum.oracle.com/boxes/oraclelinux/ol69/ol69.box"
+
+	# Without this set to false this box WILL NOT work as a base box
+	config.ssh.insert_key = false
+
+	config.vm.synced_folder "../../common/roles", "/opt/ansible-skeleton/common/roles"
+	config.vm.synced_folder "../../applications/skeleton/roles", "/opt/ansible-skeleton/application/roles"
+
+	# Stop the evil VirtualBox Guest Addition auto update
+	config.vbguest.auto_update = false
+
+	config.vm.define 'basebox' do |machine|
+
+		# Install loads of common stuff, including all ansible pre-requisites
+		machine.vm.provision "shell", inline: <<-SHELL
+			##############################################################################
+			# Main
+			##############################################################################
+
+			set -x
+			# ensure that WGET is installed!
+			sudo yum install -y wget
+
+			# setup the epel repository
+			sudo wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+			sudo rpm -ivh epel-release-6-8.noarch.rpm
+			sudo rm -rf epel-release-6-8.noarch.rpm
+	
+			# do an update and upgrade
+			sudo yum update -y
+			sudo yum upgrade -y
+
+			# install some useful utilities
+			sudo yum install -y rsync
+			sudo yum install -y vim-enhanced
+			sudo yum install -y nc
+			sudo yum install -y multitail
+			sudo yum install -y tree
+			sudo yum install -y git
+			sudo yum install -y jq
+
+			# install ansible AND latest jinja2 (used by ansible templating)
+			sudo yum install -y ansible
+			sudo yum update -y ansible
+			sudo yum groupinstall -y 'Development Tools'
+			sudo yum install -y zlib-devel
+            sudo yum install -y bzip2-devel
+            sudo yum install -y openssl-devel
+            sudo yum install -y ncurses-devel
+            sudo yum install -y sqlite-devel
+            sudo yum install -y python-virtualenv
+            yes | sudo pip install --upgrade virtualenv
+			sudo yum install -y python-devel
+			sudo yum install -y python-pip
+			sudo yum install -y python-jmespath
+			sudo touch /usr/lib/python2.6/site-packages/easy-install.pth
+			sudo pip install Jinja2 --upgrade
+
+			SHELL
+
+		machine.vm.provision :ansible_local do |ansible|
+				ansible.config_file    = "ansible/ansible.cfg"
+				ansible.playbook       = "ansible/site.yml"
+				ansible.verbose        = "vv"
+				ansible.install        = true
+				ansible.limit          = "all"
+				ansible.inventory_path = "ansible/hosts.ini"
+				ansible.extra_vars = {
+					vagrantfile_http_proxy: ENV['http_proxy'] || ''
+				}
+		end
+
+	end
+
+end
+
+
+
+
+

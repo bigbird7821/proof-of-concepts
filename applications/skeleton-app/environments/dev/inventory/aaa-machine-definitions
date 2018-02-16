@@ -1,9 +1,0 @@
-###VAGRANT-MANAGED-BLOCK###
-192.168.77.21 ansible_ssh_host=192.168.77.21 ansible_ssh_private_key_file=/home/vagrant/.vagrant/machines/machine1/virtualbox/private_key
-192.168.77.22 ansible_connection=local
-
-[all:vars]
-ansible_connection=ssh
-ansible_ssh_user=vagrant
-ansible_ssh_pass=vagrant
-###VAGRANT-MANAGED-BLOCK###

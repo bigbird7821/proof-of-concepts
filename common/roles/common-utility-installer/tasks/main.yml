@@ -1,0 +1,20 @@
+---
+- name: Install common utility packages like vim
+  become: true
+  yum:
+    name: "{{item}}"
+    state: installed
+  with_items:
+   - ack
+   - bind-utils
+   - dos2unix
+   - git
+   - htop
+   - jq
+   - multitail
+   - nc
+   - tar
+   - tree
+   - vim-enhanced
+   - xmlstarlet
+   #- yum-fastestmirror

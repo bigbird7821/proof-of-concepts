@@ -3,15 +3,13 @@
 
 # Define the number of servers and the subnet to use
 $thisNumberOfVms = 2
-$thisSubSubnet = 77
+$thisSubSubnet = 87
 $thisMachineNameBase = "machine#{$thisSubSubnet}"
 $thisSubnet = "192.168.#{$thisSubSubnet}"
 
 Vagrant.configure("2") do |config|
-	 # TODO: Setup an OEL 6 base box
-    config.vm.box = "insight/elk"
-    #config.vm.box = "oracle/oel-6.9"
-    #config.vm.box_url = "http://yum.oracle.com/boxes/oraclelinux/ol69/ol69.box"
+	# TODO: Write documentation on how to setup the oel6base/skeleton box first!!
+    config.vm.box = "oel6base/skeleton"
 
     # Stop the evil VirtualBox Guest Addition auto update
     config.vbguest.auto_update = false

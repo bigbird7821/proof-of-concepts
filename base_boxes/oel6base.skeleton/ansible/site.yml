@@ -1,0 +1,12 @@
+---
+# Keep this do-nothing task as this is required for vagrant provisioning
+# NOTE: proxy then EPEL should be setup before anything else!
+- name: site.yml | All roles
+  hosts: all
+  become: true
+  become_user: root
+  roles:
+    - { role: common-utility-installer }
+    - { role: vagrant-base-cleaner }
+
+
