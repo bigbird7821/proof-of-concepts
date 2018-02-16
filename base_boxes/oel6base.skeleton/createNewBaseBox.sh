@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-
-
 # create the new base box
 #vagrant up --provision
 
