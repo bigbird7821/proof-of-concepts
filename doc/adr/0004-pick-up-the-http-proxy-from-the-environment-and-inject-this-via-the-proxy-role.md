@@ -16,7 +16,8 @@ Extract the http_proxy from the local terminal environment, if it exists, rather
 ```
 proxy_configurator_http_proxy: "{{ lookup('env','http_proxy') }}"
 ```
+The consequence of this is as follows.
 
 ## Consequences
 
-The http_proxy is no longer hardcoded but picked up depending on the environment.  Much more flexible solution.
+The http_proxy is no longer hardcoded but picked up depending on the environment.
