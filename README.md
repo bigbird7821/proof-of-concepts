@@ -1,4 +1,4 @@
-Table of Contents for skeleton-chef
+Table of Contents for ansible-skeleton-vagrant
 =================
 
    * [Table of Contents for skeleton](#table-of-contents-for-skeleton-skeleton)
@@ -70,7 +70,7 @@ Table of Contents for skeleton-chef
     * Go to **./applications/skeleton**
     * vagrant up --provision
 
-* SSH onto machine6 the ansible controller:
+* SSH onto machine872 the ansible controller:
     * vagrant ssh machine872
     * cd /vagrant/plays
     * ansible-playbook --diff -vv ping.yml
