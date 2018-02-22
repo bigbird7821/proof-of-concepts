@@ -1,4 +1,4 @@
-Table of Contents for skeleton-chef
+Table of Contents for ansible-skeleton-vagrant
 =================
 
    * [Table of Contents for skeleton](#table-of-contents-for-skeleton-skeleton)
