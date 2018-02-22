@@ -8,6 +8,8 @@
   roles:
     - epel-6.8-repository-installer
     - common-utility-installer
+    - dnsmasq-installer
+    - dnsmasq-configurator
 
 - name: Ensure that the vagrant cleanup happens at the end!
   hosts: all

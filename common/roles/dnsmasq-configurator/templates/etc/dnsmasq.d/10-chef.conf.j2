@@ -1,0 +1,8 @@
+address=/machine1/192.168.77.21
+address=/machine2/192.168.77.22
+address=/machine3/192.168.77.23
+address=/machine4/192.168.77.24
+address=/machine5/192.168.77.25
+address=/machine6/192.168.77.26
+#{{groups['all'] | map('extract', hostvars, 'ansible_hostname') | list | join(', ')}}, 
+#{{groups['all'] | join(', ')}}

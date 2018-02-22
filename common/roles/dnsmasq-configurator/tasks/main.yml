@@ -1,0 +1,11 @@
+---
+- name: "Add dnsmasq config to ensure vm hostnames resolve to IPs"
+  become: true
+  template:
+    src: etc/dnsmasq.d/10-chef.conf.j2
+    dest: /etc/dnsmasq.d/10-chef.conf
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+  notify: "restart dnsmasq"
+

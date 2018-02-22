@@ -1,0 +1,24 @@
+- name: root/dnsmasq-installer tests
+  hosts: all
+  gather_facts: False
+  tasks:
+    - include_role: {name: function/ansible-test-runner}
+      vars:
+        _test_case_title: dnsmasq should only be listening on the loopback interface 127.0.0.1
+        _should_debug_test: false
+        _bash_test_code: |
+          result=$(sudo netstat -tlnp)
+
+          set -x
+          # fail if...
+            expected="1"
+            actual=$( echo "${result}" | grep dnsmasq | wc -l )
+            (( "${actual}" != "${expected}"  )) && echo "only 1 dnsmasq interface listener should be present" && exit 1
+
+          # fail if...
+          expected="127.0.0.1:53"
+          actual=$( echo "${result}" | grep dnsmasq | awk '{ print $4 }' )
+          [[ "${actual}" != "${expected}" ]] && echo "dnsmasq listener should be bound to the local 127.0.0.1 interface" && exit 1
+
+          # otherwise everything passed fine
+          exit 0

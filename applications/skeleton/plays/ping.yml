@@ -4,6 +4,8 @@
   roles:
     - proxy-configurator
     - epel-6.8-repository-installer
+    - dnsmasq-installer
+    - dnsmasq-configurator
   tasks:
     - name: Ping
       ping:
