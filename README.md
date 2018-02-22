@@ -71,7 +71,7 @@ Table of Contents for skeleton-chef
     * vagrant up --provision
 
 * SSH onto machine6 the ansible controller:
-    * vagrant ssh machine2
+    * vagrant ssh machine872
     * cd /vagrant/plays
     * ansible-playbook --diff -vv ping.yml
     * ansible-playbook test.yml
