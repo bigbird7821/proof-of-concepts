@@ -70,7 +70,7 @@ Table of Contents for ansible-skeleton-vagrant
     * Go to **./applications/skeleton**
     * vagrant up --provision
 
-* SSH onto machine6 the ansible controller:
+* SSH onto machine2 the ansible controller:
     * vagrant ssh machine2
     * cd /vagrant/plays
     * ansible-playbook --diff -vv ping.yml
