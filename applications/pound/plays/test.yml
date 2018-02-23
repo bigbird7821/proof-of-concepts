@@ -1,0 +1,20 @@
+---
+- name: Sample infrastructure test
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - include_role: {name: function/ansible-test-runner}
+      vars:
+        _test_case_title: uname should return expected value
+        _should_debug_test: false
+        _bash_test_code: |
+          set -x
+          actual=$( uname -r )
+          expected="4.1.12-112.14.1.el6uek.x86_64"
+
+          # fail if...
+          [[ ! ( "${actual}" == "${expected}" ) ]] && echo "{{_test_case_title}} ${expected}" && exit 1
+
+          # otherwise everything passed fine
+          exit 0
