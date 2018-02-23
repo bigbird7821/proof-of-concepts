@@ -1,5 +1,5 @@
 ---
-proxy_configurator_http_proxy: "{{ lookup('env','http_proxy') | replace(' ', '') }}"
+proxy_configurator_http_proxy: "http://proxy.intra.bt.com:8080"
 proxy_configurator_no_proxy:  >
   localhost, 127.0.0.1, 
   {{groups['all'] | map('extract', hostvars, 'ansible_fqdn') | list | join(', ')}},
