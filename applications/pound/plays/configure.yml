@@ -1,0 +1,26 @@
+- name: Configure pound load balancer
+  hosts: pound
+  tasks:
+    - name: Update the pound configuration file
+      become: true
+      template:
+        src: templates/etc/pound.cfg.j2
+        dest: /etc/pound.cfg
+        owner: root
+        group: root
+        mode: 0544
+      notify: "restart pound"
+    
+    - name: Ensure that pound is always running
+      become: true
+      service:
+        name: pound
+        state: started
+
+  handlers:
+    - name: Restarting pound load balancer
+      listen: "restart pound"
+      become: true
+      service:
+        name: pound
+        state: restarted
