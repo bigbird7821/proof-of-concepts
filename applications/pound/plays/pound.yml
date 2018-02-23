@@ -1,0 +1,8 @@
+- name: Install Pound Load Balancer
+  hosts: pound
+  tasks:
+    - name: Install pound
+      become: true
+      yum:
+        name: Pound
+        state: installed
