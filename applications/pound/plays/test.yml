@@ -18,3 +18,14 @@
 
           # otherwise everything passed fine
           exit 0
+
+- name: Check pound exists
+  hosts: pound
+  gather_facts: false
+  tasks:
+    - include_role: {name: function/ansible-test-runner}
+      vars:
+        _test_case_title: ensure pound exists
+        _should_debug_test: false
+        _bash_test_code: |
+          rpm -qa | grep Pound
