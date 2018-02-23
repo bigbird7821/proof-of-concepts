@@ -1,7 +1,0 @@
-.vagrant
-cache
-plays/cache
-environments/dev/hosts.ini.example
-.vpass
-*.sw*
-*.retry
