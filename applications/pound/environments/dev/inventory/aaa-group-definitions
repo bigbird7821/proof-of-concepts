@@ -1,3 +1,4 @@
 # Define all your groups in here without any IPs, e.g., as below
 # Then create other inventory files with IP definitions
 [pound]
+[apache]

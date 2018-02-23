@@ -6,3 +6,12 @@
       yum:
         name: Pound
         state: installed
+
+- name: Install Apache servers
+  hosts: apache
+  tasks:
+    - name: Install Apache
+      become: true
+      package:
+        name: httpd
+        state: installed
