@@ -70,7 +70,7 @@ Table of Contents for ansible-skeleton-vagrant
     * Go to **./applications/skeleton**
     * vagrant up --provision
 
-* SSH onto machine872 the ansible controller:
+* SSH onto the ansible controller, which is always the last machine in the series.  For example, if only 2 VMs are present, i.e., machine871 and machine872, then the machine872 is the ansible controller; therefore:
     * vagrant ssh machine872
     * cd /vagrant/plays
     * ansible-playbook --diff -vv ping.yml
