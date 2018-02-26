@@ -1,2 +1,6 @@
 ---
-# tasks file for pound-installer
+- name: Install pound
+  become: true
+  yum:
+    name: Pound
+    state: installed

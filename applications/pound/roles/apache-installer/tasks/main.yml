@@ -1,2 +1,6 @@
 ---
-# tasks file for apache-installer
+- name: Install Apache
+  become: true
+  package:
+    name: httpd
+    state: installed
