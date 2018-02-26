@@ -53,8 +53,6 @@
         group: root
         mode: 0644
       
-
-
   handlers:
     - name: Restarting apache
       listen: "restart apache"
