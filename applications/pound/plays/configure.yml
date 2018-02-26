@@ -44,6 +44,17 @@
         name: httpd
         state: started
 
+    - name: Configure httpd welcome page
+      become: true
+      template:
+        src: templates/var/www/html/index.html.j2
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: 0644
+      
+
+
   handlers:
     - name: Restarting apache
       listen: "restart apache"
