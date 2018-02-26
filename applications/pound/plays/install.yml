@@ -1,17 +1,9 @@
-- name: Install Pound Load Balancer
-  hosts: pound
-  tasks:
-    - name: Install pound
-      become: true
-      yum:
-        name: Pound
-        state: installed
+- name: Install Apache servers
+  hosts: apache
+  roles:
+      apache-installer
 
 - name: Install Apache servers
   hosts: apache
-  tasks:
-    - name: Install Apache
-      become: true
-      package:
-        name: httpd
-        state: installed
+  roles:
+      apache-installer
