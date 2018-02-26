@@ -1,0 +1,25 @@
+---
+- name: Update the httpd configuration file
+  become: true
+  template:
+    src: etc/httpd/conf/httpd.conf.j2
+    dest: /etc/httpd/conf/httpd.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: "restart apache"
+
+- name: Ensure that apache is always running
+  become: true
+  service:
+    name: httpd
+    state: started
+
+- name: Configure httpd welcome page
+  become: true
+  template:
+    src: var/www/html/index.html.j2
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644

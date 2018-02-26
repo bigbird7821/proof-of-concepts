@@ -1,0 +1,16 @@
+---
+- name: Update the pound configuration file
+  become: true
+  template:
+    src: etc/pound.cfg.j2
+    dest: /etc/pound.cfg
+    owner: root
+    group: root
+    mode: 0644
+  notify: "restart pound"
+
+- name: Ensure that pound is always running
+  become: true
+  service:
+    name: pound
+    state: started

@@ -1,0 +1,7 @@
+---
+- name: Restarting pound load balancer
+  listen: "restart pound"
+  become: true
+  service:
+    name: pound
+    state: restarted
