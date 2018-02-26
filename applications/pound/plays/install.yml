@@ -1,9 +1,9 @@
 - name: Install Apache servers
   hosts: apache
   roles:
-      apache-installer
+    - apache-installer
 
 - name: Install Apache servers
   hosts: apache
   roles:
-      apache-installer
+    - apache-installer
