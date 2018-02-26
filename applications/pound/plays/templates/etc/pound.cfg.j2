@@ -22,14 +22,14 @@ ListenHTTPS
     Cert    "/etc/pki/tls/certs/pound.pem"
 End
 
+
 Service
+
+  {% for host in groups['apache'] %}
     BackEnd
-        Address 127.0.0.1
-        Port    8000
+      Address {{host}}
+      Port    80
     End
-    
-    BackEnd
-        Address 127.0.0.1
-        Port    8001
-    End
+  {% endfor %}
+
 End

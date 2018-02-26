@@ -8,9 +8,9 @@
         dest: /etc/pound.cfg
         owner: root
         group: root
-        mode: 0544
+        mode: 0644
       notify: "restart pound"
-    
+
     - name: Ensure that pound is always running
       become: true
       service:
@@ -23,4 +23,31 @@
       become: true
       service:
         name: pound
+        state: restarted
+
+- name: Configure apache backend servers
+  hosts: apache
+  tasks:
+    - name: Update the httpd configuration file
+      become: true
+      template:
+        src: templates/etc/httpd/conf/httpd.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify: "restart apache"
+
+    - name: Ensure that apache is always running
+      become: true
+      service:
+        name: httpd
+        state: started
+
+  handlers:
+    - name: Restarting apache
+      listen: "restart apache"
+      become: true
+      service:
+        name: httpd
         state: restarted

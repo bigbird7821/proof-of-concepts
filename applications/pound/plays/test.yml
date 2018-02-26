@@ -4,36 +4,35 @@
   become: true
   gather_facts: false
   tasks:
-    - include_role: {name: function/ansible-test-runner}
-      vars:
-        _test_case_title: Linux kernal should be 4.1.12.x
-        _should_debug_test: false
-        _bash_test_code: |
-          set -x
-          actual=$( uname -r )
-          expected="4\.1\.12-112\.14\.[0-9]{0,3}\.el6uek\.x86_64$"
-          echo "${actual}" | grep -E "${expected}"
+    # - include_role: {name: function/ansible-test-runner}
+    #   vars:
+    #     _test_case_title: Linux kernal should be 4.1.12.x
+    #     _should_debug_test: false
+    #     _bash_test_code: |
+    #       set -x
+    #       actual=$( uname -r )
+    #       expected="4\.1\.12-112\.14\.[0-9]{0,3}\.el6uek\.x86_64$"
+    #       echo "${actual}" | grep -E "${expected}"
 
     - include_role: {name: function/ansible-test-runner}
       vars:
-        _test_case_title: Load Balancer should be able to connect to Apache severs
+        _test_case_title: Load Balancer should be able to connect to Apache servers
         _should_debug_test: false
         _bash_test_code: |
           set -x
           {% for host in groups['pound'] %}
              actual=$(curl -sS {{host}})
              totest="The service is not available. Please try again later"
-             echo "${actual}" | grep  "${totest}"
+             echo "${actual}" | grep -v "${totest}"
           {% endfor %}
-         
-- name: " "
-  hosts: pound
-  gather_facts: false
-  tasks:
-    - include_role: {name: function/ansible-test-runner}
-      vars:
-        _test_case_title: ensure pound exists
-        _should_debug_test: false
-        _bash_test_code: |
-          rpm -qa | grep Pound
-    
+
+# - name: " "
+#   hosts: pound
+#   gather_facts: false
+#   tasks:
+#     - include_role: {name: function/ansible-test-runner}
+#       vars:
+#         _test_case_title: ensure pound exists
+#         _should_debug_test: false
+#         _bash_test_code: |
+#           rpm -qa | grep Pound
