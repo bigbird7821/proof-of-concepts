@@ -28,7 +28,7 @@ Service
   {% for host in groups['apache'] %}
     BackEnd
       Address {{host}}
-      Port    80
+      Port    {{hostvars[host].apache_port | default(80)}}
     End
   {% endfor %}
 
