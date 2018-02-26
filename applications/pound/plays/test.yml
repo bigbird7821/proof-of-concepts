@@ -6,13 +6,12 @@
   tasks:
     - include_role: {name: function/ansible-test-runner}
       vars:
-        _test_case_title: uname should return expected value
+        _test_case_title: Linux kernal should be 4.1.12.x
         _should_debug_test: false
         _bash_test_code: |
           set -x
           actual=$( uname -r )
           expected="4\.1\.12-112\.14\.[0-9]{0,3}\.el6uek\.x86_64$"
-
           echo "${actual}" | grep -E "${expected}"
 
 - name: Check pound exists
